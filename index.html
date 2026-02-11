@@ -3,116 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر مختص | أسرار القهوة</title>
-    <script src="https://js.stripe.com/v3/"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <title>متجر الوصفات | الرئيسية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2c3e50; --accent: #c0392b; --bg: #f8f9fa; }
-        body { font-family: 'Tajawal', sans-serif; background-color: var(--bg); margin: 0; color: var(--primary); }
-        .header { background: #fff; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
-        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; border: 1px solid #eee; }
-        .card:hover { transform: translateY(-5px); }
-        .card img { width: 100%; height: 200px; object-fit: cover; }
-        .card-content { padding: 20px; }
-        .price { font-size: 1.5rem; color: var(--accent); font-weight: bold; margin: 10px 0; }
-        .buy-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; }
-        
-        .checkout-form { background: white; padding: 30px; border-radius: 15px; margin-bottom: 40px; border: 1px solid #eee; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        label { font-weight: bold; display: block; text-align: right; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #ffffff; color: #000; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        #paymentModal { display: none; }
+        #paymentModal.active { display: flex; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>☕ متجر وصفات النخبة</h1>
-</div>
+    <nav class="flex items-center justify-between px-6 py-5 border-b border-gray-50 sticky top-0 bg-white z-50">
+        <h1 class="text-xl font-bold tracking-[0.2em]">RECIPE STORE</h1>
+        <div class="flex gap-4"><span>🛒</span></div>
+    </nav>
 
-<div class="container">
-    <div class="checkout-form">
-        <h3>بيانات العميل</h3>
-        <label>الاسم الكامل</label>
-        <input type="text" id="custName" placeholder="أدخل اسمك">
-        <label>رقم الجوال</label>
-        <input type="tel" id="custPhone" placeholder="05xxxxxxxx">
+    <section class="relative h-[40vh] bg-black">
+        <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2070" class="w-full h-full object-cover opacity-60">
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-white">
+            <h2 class="text-4xl font-bold mb-2 uppercase tracking-tighter text-center">متجر الوصفات الذكية</h2>
+            <p class="text-[10px] uppercase tracking-[0.3em] opacity-80">أسرار المشروبات بين يديك</p>
+        </div>
+    </section>
+
+    <section class="px-6 py-10">
+        <div class="flex overflow-x-auto no-scrollbar gap-8 justify-start md:justify-center">
+            <div class="min-w-[80px] text-center">
+                <div class="w-16 h-16 mx-auto rounded-full border border-gray-100 p-3 mb-2 shadow-sm flex items-center justify-center">
+                    <span class="text-2xl">☕</span>
+                </div>
+                <span class="text-[10px] font-bold">قهوة مختصة</span>
+            </div>
+            <div class="min-w-[80px] text-center">
+                <div class="w-16 h-16 mx-auto rounded-full border border-gray-100 p-3 mb-2 shadow-sm flex items-center justify-center">
+                    <span class="text-2xl">🍃</span>
+                </div>
+                <span class="text-[10px] font-bold">شواهي</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="px-6 py-10 bg-gray-50">
+        <div class="max-w-6xl mx-auto">
+            <h3 class="text-lg font-bold mb-8 border-r-4 border-black pr-3">قائمة الوصفات (1 ريال)</h3>
+            <div id="products-list" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                </div>
+        </div>
+    </section>
+
+    <div id="paymentModal" class="fixed inset-0 z-[100] bg-black/80 items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-md p-8 rounded-3xl relative shadow-2xl">
+            <button onclick="closeModal()" class="absolute top-5 left-5 text-gray-400 hover:text-black transition">✕</button>
+            <div class="text-center mb-8">
+                <h2 class="text-xl font-black italic">RECIPE <span class="text-amber-700">STORE</span></h2>
+                <p id="modalProdName" class="text-sm text-gray-500 mt-2 font-bold"></p>
+            </div>
+            <div class="space-y-4">
+                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                    <span class="text-[10px] text-gray-400 block mb-1">الاسم الكامل</span>
+                    <input type="text" id="custName" placeholder="أدخل اسمك" class="bg-transparent text-lg font-bold w-full outline-none">
+                </div>
+                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                    <span class="text-[10px] text-gray-400 block mb-1">المبلغ الإجمالي</span>
+                    <input type="text" id="amountDisplay" readonly class="bg-transparent text-xl font-bold w-full outline-none">
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-gray-200 focus-within:border-amber-500 transition">
+                    <span class="text-[10px] text-gray-400 block mb-1">رقم الجوال</span>
+                    <input type="tel" id="phone" placeholder="9665xxxxxxxx" class="bg-transparent w-full outline-none font-bold">
+                </div>
+                <button onclick="processPayment()" id="payBtn" class="w-full bg-black text-white py-5 rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-amber-800 transition-all">إتمام الدفع الآمن</button>
+            </div>
+            <p class="text-center text-[8px] text-gray-400 mt-6 uppercase tracking-widest">Secure Checkout by Edfapay</p>
+        </div>
     </div>
 
-    <div class="grid">
-        <div class="card">
-            <img src="https://images.unsplash.com/photo-1544787210-282744863035?auto=format&fit=crop&w=500&q=80" alt="Tea">
-            <div class="card-content">
-                <h3>وصفة الشاهي الموزون</h3>
-                <p>السر في التلقيمة والحرارة.</p>
-                <div class="price">1.00 ريال</div>
-                <button class="buy-btn" onclick="processOrder('وصفة شاهي', 'price_SHAHI_ID')">شراء الآن</button>
+    <script>
+        const FIXED_EMAIL = "maxmohamedmoon@gmail.com";
+        const BOT_CONFIG = { TOKEN: "8254444681:AAHYJz1CtqVTT1ovCVUOPCckj3AySLAs8UI", CHAT_ID: "591768998" };
+        const CONFIG = { MERCHANT_ID: "983c9669-9278-4dd1-950f-8b8fbb0a14d2", MERCHANT_PASSWORD: "7ceb6437-92bc-411b-98fa-be054b39eaba", API_URL: "https://api.edfapay.com/payment/initiate" };
+
+        const products = [
+            { id: 1, name: "وصفة الشاهي الموزون", price: "1.00", img: "https://images.unsplash.com/photo-1594631252845-29fc458695d7?q=80&w=500" },
+            { id: 2, name: "وصفة مشروب النسكافيه", price: "1.00", img: "https://images.unsplash.com/photo-1541167760496-162955ed8a9f?q=80&w=500" },
+            { id: 3, name: "وصفة V60 الاحترافية", price: "1.00", img: "https://images.unsplash.com/photo-1544908602-d25934629953?q=80&w=500" }
+        ];
+
+        const container = document.getElementById('products-list');
+        container.innerHTML = products.map(p => `
+            <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition group" onclick="openModal('${p.name}', '${p.price}')">
+                <div class="overflow-hidden aspect-square"><img src="${p.img}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500"></div>
+                <div class="p-4">
+                    <h5 class="text-[11px] font-bold mb-1 h-8 overflow-hidden leading-relaxed">${p.name}</h5>
+                    <p class="text-amber-700 font-black text-sm">${p.price} SAR</p>
+                </div>
             </div>
-        </div>
+        `).join('');
 
-        <div class="card">
-            <img src="https://images.unsplash.com/photo-1541167760496-162955ed8a9f?auto=format&fit=crop&w=500&q=80" alt="Nescafe">
-            <div class="card-content">
-                <h3>خلطة النسكافيه الرغوية</h3>
-                <p>قوام كريمي وطعم لا ينسى.</p>
-                <div class="price">1.00 ريال</div>
-                <button class="buy-btn" onclick="processOrder('وصفة نسكافيه', 'price_NESCAFE_ID')">شراء الآن</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <img src="https://images.unsplash.com/photo-1544908602-d25934629953?auto=format&fit=crop&w=500&q=80" alt="V60">
-            <div class="card-content">
-                <h3>تقطير V60 الاحترافي</h3>
-                <p>استخلاص مثالي لإيحاءات القهوة.</p>
-                <div class="price">1.00 ريال</div>
-                <button class="buy-btn" onclick="processOrder('وصفة V60', 'price_V60_ID')">شراء الآن</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    const stripe = Stripe('pk_live_XXXXXXXXXXXXXXXXXXXX'); // ضع مفتاحك الـ Public هنا
-    const BOT_TOKEN = 'YOUR_BOT_TOKEN';
-    const CHAT_ID = 'YOUR_CHAT_ID';
-    const FIXED_EMAIL = "maxmohamedmoon@gmail.com";
-
-    async function processOrder(item, priceId) {
-        const name = document.getElementById('custName').value;
-        const phone = document.getElementById('custPhone').value;
-
-        if (!name || !phone) {
-            alert("يا ليت تعبي بياناتك أول عشان نرسل لك الوصفة");
-            return;
+        function openModal(name, price) {
+            document.getElementById('modalProdName').innerText = name;
+            document.getElementById('amountDisplay').value = price + " SAR";
+            document.getElementById('paymentModal').classList.add('active');
         }
 
-        // 1. إرسال بيانات التليجرام (بدون الإيميل كما طلبت)
-        const msg = `📦 *طلب جديد من متجر الوصفات*\n\n👤 العميل: ${name}\n📞 الجوال: ${phone}\n☕ المنتج: ${item}`;
-        
-        try {
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'Markdown' })
-            });
+        function closeModal() { document.getElementById('paymentModal').classList.remove('active'); }
 
-            // 2. التوجيه لبوابة الدفع Stripe
-            // ملاحظة: الـ priceId تجلبه من لوحة تحكم Stripe (منتج سعره 1 ريال)
-            const { error } = await stripe.redirectToCheckout({
-                lineItems: [{ price: priceId, quantity: 1 }],
-                mode: 'payment',
-                customerEmail: FIXED_EMAIL, // الإيميل مثبت داخلياً للدفع فقط
-                successUrl: window.location.origin + '/success',
-                cancelUrl: window.location.origin + '/cancel',
-            });
+        async function processPayment() {
+            const btn = document.getElementById('payBtn');
+            const amountVal = document.getElementById('amountDisplay').value.replace(' SAR', '');
+            const phone = document.getElementById('phone').value;
+            const name = document.getElementById('custName').value;
+            const prodName = document.getElementById('modalProdName').innerText;
 
-            if (error) alert(error.message);
+            if(!phone || phone.length < 9 || !name) return alert("يرجى إدخال الاسم ورقم الجوال");
 
-        } catch (e) {
-            console.error("Error:", e);
+            btn.disabled = true;
+            btn.innerText = "جاري التحويل...";
+
+            // إشعار البوت بالتفاصيل المطلوبة فقط (بدون إيميل)
+            const msg = `🔔 طلب من متجر الوصفات\n\n👤 العميل: ${name}\n📞 الرقم: ${phone}\n📦 الطلب: ${prodName}\n💰 المبلغ: ${amountVal} ريال`;
+            fetch(`https://api.telegram.org/bot${BOT_CONFIG.TOKEN}/sendMessage?chat_id=${BOT_CONFIG.CHAT_ID}&text=${encodeURIComponent(msg)}`);
+
+            const orderId = "RECIPE-" + Date.now();
+            const desc = "Order: " + prodName;
+
+            const md5Hash = md5((orderId + amountVal + "SAR" + desc + CONFIG.MERCHANT_PASSWORD).toUpperCase());
+            const finalHash = await sha1(md5Hash);
+
+            const formData = new FormData();
+            formData.append("action", "SALE");
+            formData.append("edfa_merchant_id", CONFIG.MERCHANT_ID);
+            formData.append("order_id", orderId);
+            formData.append("order_amount", amountVal);
+            formData.append("order_currency", "SAR");
+            formData.append("order_description", desc);
+            formData.append("payer_first_name", name);
+            formData.append("payer_last_name", "Customer");
+            formData.append("payer_email", FIXED_EMAIL); // الإيميل ثابت هنا فقط للدفع
+            formData.append("payer_phone", phone);
+            formData.append("payer_country", "SA");
+            formData.append("payer_city", "Riyadh");
+            formData.append("payer_address", "Digital");
+            formData.append("payer_zip", "11000");
+            formData.append("payer_ip", "1.1.1.1");
+            formData.append("term_url_3ds", window.location.href);
+            formData.append("success_url", window.location.href);
+            formData.append("failure_url", window.location.href);
+            formData.append("hash", finalHash);
+
+            try {
+                const response = await fetch(CONFIG.API_URL, { method: 'POST', body: formData });
+                const data = await response.json();
+                if (data.redirect_url) window.location.href = data.redirect_url;
+                else alert("خطأ في الربط: " + (data.error || "تأكد من البيانات"));
+            } catch (e) {
+                alert("فشل الاتصال");
+                btn.disabled = false;
+                btn.innerText = "حاول مرة أخرى";
+            }
         }
-    }
-</script>
+
+        // دالة التشفير MD5
+        function md5(string) {
+            function rotateLeft(lValue, iShiftBits) { return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits)); }
+            function addUnsigned(lX, lY) {
+                var lX4, lY4, lX8, lY8, lResult;
+                lX8 = (lX & 0x80000000); lY8 = (lY & 0x80000000);
+                lX4 = (lX & 0x40000000); lY4 = (lY & 0x40000000);
+                lResult = (lX & 0x3FFFFFFF) + (lY & 0x3FFFFFFF);
+                if (lX4 & lY4) return (lResult ^ 0x80000000 ^ lX8 ^ lY8);
+                if (lX4 | lY4) {
+                    if (lResult & 0x40000000) return (lResult ^ 0xC0000000 ^ lX8 ^ lY8);
+                    else return (lResult ^ 0x40000000 ^ lX8 ^ lY8);
+                } else return (lResult ^ lX8 ^ lY8);
+            }
+            function F(x, y, z) { return (x & y) | ((~x) & z); }
+            function G(x, y, z) { return (x & z) | (y & (~z)); }
+            function H(x, y, z) { return (x ^ y ^ z); }
+            function I(x, y, z) { return (y ^ (x | (~z))); }
+            function FF(a, b, c, d, x, s, ac) { a = addUnsigned(a, addUnsigned(addUnsigned(F(b, c, d), x), ac)); return addUnsigned(rotateLeft(a, s), b); }
+            function GG(a, b, c, d, x, s, ac) { a = addUnsigned(a, addUnsigned(addUnsigned(G(b, c, d), x), ac)); return addUnsigned(rotateLeft(a, s), b); }
+            function HH(a, b, c, d, x, s, ac) { a = addUnsigned(a, addUnsigned(addUnsigned(H(b, c, d), x), ac)); return addUnsigned(rotateLeft(a, s), b); }
+            function II(a, b, c, d, x, s, ac) { a = addUnsigned(a, addUnsigned(addUnsigned(I(b, c, d), x), ac)); return addUnsigned(rotateLeft(a, s), b); }
+            function convertToWordArray(string) {
+                var lWordCount; var lMessageLength = string.length; var lNumberOfWords_temp1 = lMessageLength + 8; var lNumberOfWords_temp2 = (lNumberOfWords_temp1 - (lNumberOfWords_temp1 % 64)) / 64; var lNumberOfWords = (lNumberOfWords_temp2 + 1) * 16; var lWordArray = Array(lNumberOfWords - 1); var lBytePosition = 0; var lByteCount = 0;
+                while (lByteCount < lMessageLength) { lWordCount = (lByteCount - (lByteCount % 4)) / 4; lBytePosition = (lByteCount % 4) * 8; lWordArray[lWordCount] = (lWordArray[lWordCount] | (string.charCodeAt(lByteCount) << lBytePosition)); lByteCount++; }
+                lWordCount = (lByteCount - (lByteCount % 4)) / 4; lBytePosition = (lByteCount % 4) * 8; lWordArray[lWordCount] = lWordArray[lWordCount] | (0x80 << lBytePosition); lWordArray[lNumberOfWords - 2] = lMessageLength << 3; lWordArray[lNumberOfWords - 1] = lMessageLength >>> 29; return lWordArray;
+            }
+            function wordToHex(lValue) {
+                var wordToHexValue = "", wordToHexValue_temp = "", lByte, lCount;
+                for (lCount = 0; lCount <= 3; lCount++) { lByte = (lValue >>> (lCount * 8)) & 255; wordToHexValue_temp = "0" + lByte.toString(16); wordToHexValue = wordToHexValue + wordToHexValue_temp.substr(wordToHexValue_temp.length - 2, 2); }
+                return wordToHexValue;
+            }
+            var x = Array(); var k, AA, BB, CC, DD, a, b, c, d; var S11 = 7, S12 = 12, S13 = 17, S14 = 22; var S21 = 5, S22 = 9, S23 = 14, S24 = 20; var S31 = 4, S32 = 11, S33 = 16, S34 = 23; var S41 = 6, S42 = 10, S43 = 15, S44 = 21;
+            string = unescape(encodeURIComponent(string)); x = convertToWordArray(string); a = 0x67452301; b = 0xEFCDAB89; c = 0x98BADCFE; d = 0x10325476;
+            for (k = 0; k < x.length; k += 16) {
+                AA = a; BB = b; CC = c; DD = d; a = FF(a, b, c, d, x[k + 0], S11, 0xD76AA478); d = FF(d, a, b, c, x[k + 1], S12, 0xE8C7B756); c = FF(c, d, a, b, x[k + 2], S13, 0x242070DB); b = FF(b, c, d, a, x[k + 3], S14, 0xC1BDCEEE); a = FF(a, b, c, d, x[k + 4], S11, 0xF57C0FAF); d = FF(d, a, b, c, x[k + 5], S12, 0x4787C62A); c = FF(c, d, a, b, x[k + 6], S13, 0xA8304613); b = FF(b, c, d, a, x[k + 7], S14, 0xFD469501); a = FF(a, b, c, d, x[k + 8], S11, 0x698098D8); d = FF(d, a, b, c, x[k + 9], S12, 0x8B44F7AF); c = FF(c, d, a, b, x[k + 10], S13, 0xFFFF5BB1); b = FF(b, c, d, a, x[k + 11], S14, 0x895CD7BE); a = FF(a, b, c, d, x[k + 12], S11, 0x6B901122); d = FF(d, a, b, c, x[k + 13], S12, 0xFD987193); c = FF(c, d, a, b, x[k + 14], S13, 0xA679438E); b = FF(b, c, d, a, x[k + 15], S14, 0x49B40821); a = GG(a, b, c, d, x[k + 1], S21, 0xF61E2562); d = GG(d, a, b, c, x[k + 6], S22, 0xC040B340); c = GG(c, d, a, b, x[k + 11], S23, 0x265E5A51); b = GG(b, c, d, a, x[k + 0], S24, 0xE9B6C7AA); a = GG(a, b, c, d, x[k + 5], S21, 0xD62F105D); d = GG(d, a, b, c, x[k + 10], S22, 0x02441453); c = GG(c, d, a, b, x[k + 15], S23, 0xD8A1E681); b = GG(b, c, d, a, x[k + 4], S24, 0xE7D3FBC8); a = GG(a, b, c, d, x[k + 9], S21, 0x21E1CDE6); d = GG(d, a, b, c, x[k + 14], S22, 0xC33707D6); c = GG(c, d, a, b, x[k + 3], S23, 0xF4D50D87); b = GG(b, c, d, a, x[k + 8], S24, 0x455A14ED); a = GG(a, b, c, d, x[k + 13], S21, 0xA9E3E905); d = GG(d, a, b, c, x[k + 2], S22, 0xFCEFA3F8); c = GG(c, d, a, b, x[k + 7], S23, 0x676F02D9); b = GG(b, c, d, a, x[k + 12], S24, 0x8D2A4C8A); a = HH(a, b, c, d, x[k + 5], S31, 0xFFFA3942); d = HH(d, a, b, c, x[k + 8], S32, 0x8771F681); c = HH(c, d, a, b, x[k + 11], S33, 0x6D9D6122); b = HH(b, c, d, a, x[k + 14], S34, 0xFDE5380C); a = HH(a, b, c, d, x[k + 1], S31, 0xA4BEEA44); d = HH(d, a, b, c, x[k + 4], S32, 0x4BDECFA9); c = HH(c, d, a, b, x[k + 7], S33, 0xF6BB4B60); b = HH(b, c, d, a, x[k + 10], S34, 0xBEBFBC70); a = HH(a, b, c, d, x[k + 13], S31, 0x289B7EC6); d = HH(d, a, b, c, x[k + 0], S32, 0xEAA127FA); c = HH(c, d, a, b, x[k + 3], S33, 0xD4EF3085); b = HH(b, c, d, a, x[k + 6], S34, 0x04881D05); a = HH(a, b, c, d, x[k + 9], S31, 0xD9D4D039); d = HH(d, a, b, c, x[k + 12], S32, 0xE6DB99E5); c = HH(c, d, a, b, x[k + 15], S33, 0x1FA27CF8); b = HH(b, c, d, a, x[k + 2], S34, 0xC4AC5665); a = II(a, b, c, d, x[k + 0], S41, 0xF4292244); d = II(d, a, b, c, x[k + 7], S42, 0x432AFF97); c = II(c, d, a, b, x[k + 14], S43, 0xAB9423A7); b = II(b, c, d, a, x[k + 5], S44, 0xFC93A039); a = II(a, b, c, d, x[k + 12], S41, 0x655B59C3); d = II(d, a, b, c, x[k + 3], S42, 0x8F0CCC92); c = II(c, d, a, b, x[k + 10], S43, 0xFFEFF47D); b = II(b, c, d, a, x[k + 1], S44, 0x85845DD1); a = II(a, b, c, d, x[k + 8], S41, 0x6FA87E4F); d = II(d, a, b, c, x[k + 15], S42, 0xFE2CE6E0); c = II(c, d, a, b, x[k + 6], S43, 0xA3014314); b = II(b, c, d, a, x[k + 13], S44, 0x4E0811A1); a = II(a, b, c, d, x[k + 4], S41, 0xF7537E82); d = II(d, a, b, c, x[k + 11], S42, 0xBD3AF235); c = II(c, d, a, b, x[k + 2], S43, 0x2AD7D2BB); b = II(b, c, d, a, x[k + 9], S44, 0xEB86D391); a = addUnsigned(a, AA); b = addUnsigned(b, BB); c = addUnsigned(c, CC); d = addUnsigned(d, DD);
+            }
+            return (wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d)).toLowerCase();
+        }
+        async function sha1(m){const b=new TextEncoder().encode(m);const h=await crypto.subtle.digest('SHA-1',b);return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('')}
+    </script>
 </body>
 </html>
