@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر الوصفات - كل شيء بريال</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; text-align: center; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .item { border-bottom: 1px solid #eee; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .item:last-child { border: none; }
+        button { background-color: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+        button:hover { background-color: #219150; }
+        .form-group { margin: 20px 0; text-align: right; }
+        input { width: 95%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px; }
+        h1 { color: #333; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>☕ متجر الوصفات الذكية</h1>
+    <p>اختر وصفتك المفضلة بـ 1 ريال فقط</p>
+
+    <div class="form-group">
+        <label>اسم العميل:</label>
+        <input type="text" id="customerName" placeholder="اكتب اسمك هنا">
+        <label>رقم الجوال:</label>
+        <input type="tel" id="customerPhone" placeholder="05xxxxxxxx">
+    </div>
+
+    <div class="item">
+        <span>🍃 وصفة شاهي مميزة</span>
+        <button onclick="pay('وصفة شاهي')">شراء - 1 ريال</button>
+    </div>
+    <div class="item">
+        <span>☕ وصفة مشروب نسكافيه</span>
+        <button onclick="pay('وصفة نسكافيه')">شراء - 1 ريال</button>
+    </div>
+    <div class="item">
+        <span>⚖️ وصفة V60 احترافية</span>
+        <button onclick="pay('وصفة V60')">شراء - 1 ريال</button>
+    </div>
+</div>
+
+<script>
+    const stripe = Stripe('YOUR_STRIPE_PUBLIC_KEY'); // ضع مفتاح Stripe الخاص بك هنا
+    const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN'; // توكن البوت
+    const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID'; // معرف الشات
+
+    async function pay(itemName) {
+        const name = document.getElementById('customerName').value;
+        const phone = document.getElementById('customerPhone').value;
+        const email = "maxmohamedmoon@gmail.com"; // الإيميل ثابت ومخفي عن الرسالة
+
+        if (!name || !phone) {
+            alert("فضلاً ادخل الاسم ورقم الجوال");
+            return;
+        }
+
+        // إرسال الإشعار للتليجرام (تم تعديل الرسالة حسب طلبك)
+        const message = `🔔 طلب جديد من متجر الوصفات:\n\n` +
+                        `👤 العميل: ${name}\n` +
+                        `📞 الرقم: ${phone}\n` +
+                        `📦 الطلب: ${itemName}\n` +
+                        `💰 المبلغ: 1 ريال`;
+
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message
+            })
+        });
+
+        // هنا يتم استدعاء بوابة الدفع (Stripe Checkout)
+        alert("تم تسجيل طلب " + itemName + " بنجاح، سيتم توجيهك للدفع.");
+        // ملاحظة: تفعيل الدفع الفعلي يتطلب Backend لإنشاء Session
+    }
+</script>
+
+</body>
+</html>
